@@ -3,15 +3,14 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	toml "github.com/BurntSushi/toml"
 )
 
 var (
 	conf          config
-	configfile    = strings.TrimSuffix(os.Args[0], ".exe") + ".toml"
-	dataDir       = "data/"
+	configfile    = "skaiacraft.toml"
+	dataDir       = "skaiacraft/"
 	defaultConfig = `
 [login]
 type="invalid"
@@ -47,9 +46,18 @@ func setupConfig() error {
 		if err != nil {
 			return err
 		}
+
+		// set default config
+		conf.Login.Type = "invalid"
+		conf.Login.Username = ""
+		conf.Login.Password = ""
+		conf.Minecraft.Version = "1.18.2"
+		conf.Minecraft.Gamedir = ".minecraft"
+		conf.Minecraft.Assets = "assets"
+
 		toml.NewEncoder(f).Encode(conf)
-		// write config file
 		f.Close()
+
 	} else {
 		fmt.Println("[SkaiaCraft] Found config, loading config")
 		_, err := toml.DecodeFile(configfile, &conf)
